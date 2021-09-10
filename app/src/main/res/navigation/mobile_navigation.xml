@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_main">
+
+    <fragment
+        android:id="@+id/navigation_main"
+        android:name="com.github.stonybean.myglow.ui.home.HomeFragment"
+        android:label="@string/title_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_dashboard"
+            app:destination="@id/navigation_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_detail"
+        android:name="com.github.stonybean.myglow.ui.dashboard.DashboardFragment"
+        android:label="navigation_detail"
+        tools:layout="@layout/fragment_detail">
+        <action
+            android:id="@+id/action_navigation_dashboard_to_navigation_home"
+            app:destination="@id/navigation_main" />
+    </fragment>
+
+</navigation>
