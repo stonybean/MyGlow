@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_main"
-        android:name="com.github.stonybean.myglow.ui.home.HomeFragment"
+        android:name="com.github.stonybean.myglow.view.MainFragment"
         android:label="@string/title_main"
         tools:layout="@layout/fragment_main" >
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/navigation_detail"
-        android:name="com.github.stonybean.myglow.ui.dashboard.DashboardFragment"
+        android:name="com.github.stonybean.myglow.view.DetailFragment"
         android:label="navigation_detail"
         tools:layout="@layout/fragment_detail">
         <action
