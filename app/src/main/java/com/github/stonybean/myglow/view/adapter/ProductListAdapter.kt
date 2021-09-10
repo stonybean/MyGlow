@@ -2,18 +2,17 @@ package com.github.stonybean.myglow.view.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.stonybean.myglow.R
 import com.github.stonybean.myglow.databinding.ItemNormalBinding
 import com.github.stonybean.myglow.model.Product
 import com.squareup.picasso.Picasso
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.stonybean.myglow.model.Recommend
 
 
@@ -29,7 +28,7 @@ class ProductListAdapter(private val context: Context) :
     inner class ViewHolder(private val binding: ItemNormalBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        @SuppressLint("SetTextI18n")
+        @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
         fun onBind(data: Product) {
             Picasso.get()
                 .load(data.imageUrl)
@@ -47,15 +46,23 @@ class ProductListAdapter(private val context: Context) :
                 binding.root.findNavController().navigate(R.id.navigation_detail, bundle)
             }
 
+            if (adapterPosition == 9 || adapterPosition == 19 || adapterPosition == 29) {
+                when (adapterPosition) {
+                    9 -> binding.tvRecommendSeq.text = "추천 1"
+                    19 -> binding.tvRecommendSeq.text = "추천 2"
+                    29 -> binding.tvRecommendSeq.text = "추천 3"
+                }
 
-//            if (adapterPosition % 10 == 0) {
-//                // 추천 상품 리스트 (가로 스크롤)
-//                val recommendListAdapter = RecommendListAdapater(recommendList)
-//                binding.rlRecommend.layoutManager =
-//                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-//                binding.rlRecommend.adapter = recommendListAdapter
-//                recommendListAdapter.notifyDataSetChanged()
-//            }
+                binding.rlRecommend.visibility = View.VISIBLE
+                val recommendListAdapter = RecommendListAdapter(recommendList)
+                binding.rvRecommend.layoutManager =
+                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                binding.rvRecommend.adapter = recommendListAdapter
+                binding.rvRecommend.setHasFixedSize(true)
+                recommendListAdapter.notifyDataSetChanged()
+            } else {
+                binding.rlRecommend.visibility = View.GONE
+            }
         }
     }
 
@@ -64,18 +71,9 @@ class ProductListAdapter(private val context: Context) :
         return ViewHolder(binding)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return productList[position].idBrand
-    }
-
     override fun getItemCount(): Int = productList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.onBind(productList[position])
-    }
-
-    fun addItem(productList: ArrayList<Product>) {
-        this.productList.addAll(productList)
-        notifyDataSetChanged()
     }
 }

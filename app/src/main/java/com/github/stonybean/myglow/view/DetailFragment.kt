@@ -9,6 +9,7 @@ import androidx.lifecycle.whenResumed
 import com.github.stonybean.myglow.R
 import com.github.stonybean.myglow.databinding.FragmentDetailBinding
 import com.github.stonybean.myglow.model.Product
+import com.github.stonybean.myglow.model.Recommend
 import com.squareup.picasso.Picasso
 
 class DetailFragment : Fragment() {
@@ -31,15 +32,25 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        try {
+            val product = arguments?.getSerializable("product") as Product
 
-        val product = arguments?.getSerializable("product") as Product
+            Picasso.get()
+                .load(product.imageUrl)
+                .placeholder(R.drawable.ic_no_image)
+                .into(binding.ivProductImage)
 
-        Picasso.get()
-            .load(product.imageUrl)
-            .placeholder(R.drawable.ic_no_image)
-            .into(binding.ivProductImage)
+            binding.tvProductTitle.text = product.productTitle
+        } catch (e: Exception) {
+            val recommend = arguments?.getSerializable("recommend") as Recommend
 
-        binding.tvProductTitle.text = product.productTitle
+            Picasso.get()
+                .load(recommend.imageUrl)
+                .placeholder(R.drawable.ic_no_image)
+                .into(binding.ivProductImage)
+
+            binding.tvProductTitle.text = recommend.productTitle
+        }
     }
 
     override fun onDestroyView() {

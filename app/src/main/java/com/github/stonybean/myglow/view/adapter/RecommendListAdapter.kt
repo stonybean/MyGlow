@@ -1,21 +1,20 @@
 package com.github.stonybean.myglow.view.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.github.stonybean.myglow.R
-import com.github.stonybean.myglow.databinding.ItemNormalBinding
 import com.github.stonybean.myglow.databinding.ItemRecommendBinding
-import com.github.stonybean.myglow.model.Product
 import com.github.stonybean.myglow.model.Recommend
 import com.squareup.picasso.Picasso
 
 /**
  * Created by Joo on 2021/09/10
  */
-class RecommendListAdapater(private val recommendList: ArrayList<Recommend>): RecyclerView.Adapter<RecommendListAdapater.ViewHolder>() {
+class RecommendListAdapter(private val recommendList: ArrayList<Recommend>): RecyclerView.Adapter<RecommendListAdapter.ViewHolder>() {
     inner class ViewHolder(private val binding: ItemRecommendBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -24,11 +23,15 @@ class RecommendListAdapater(private val recommendList: ArrayList<Recommend>): Re
             Picasso.get()
                 .load(data.imageUrl)
                 .placeholder(R.drawable.ic_no_image)
-                .resize(100, 100)
                 .into(binding.ivThumbnail)
 
             binding.tvProductTitle.text = data.productTitle
             binding.tvReview.text = "${data.ratingAvg} 리뷰(${data.reviewCount})"
+
+            binding.clRecommend.setOnClickListener {
+                val bundle = bundleOf("recommend" to data)
+                binding.root.findNavController().navigate(R.id.navigation_detail, bundle)
+            }
         }
     }
 

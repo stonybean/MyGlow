@@ -1,7 +1,7 @@
 package com.github.stonybean.myglow.model
 
-
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Recommends(
     @SerializedName("recommend1")
@@ -29,38 +29,4 @@ data class Recommend(
 
     @SerializedName("imageUrl")
     val imageUrl: String
-)
-
-//data class Recommend2(
-//    @SerializedName("idProduct")
-//    val idProduct: Int,
-//
-//    @SerializedName("productTitle")
-//    val productTitle: String,
-//
-//    @SerializedName("ratingAvg")
-//    val ratingAvg: Double,
-//
-//    @SerializedName("reviewCount")
-//    val reviewCount: String,
-//
-//    @SerializedName("imageUrl")
-//    val imageUrl: String
-//)
-//
-//data class Recommend3(
-//    @SerializedName("idProduct")
-//    val idProduct: Int,
-//
-//    @SerializedName("productTitle")
-//    val productTitle: String,
-//
-//    @SerializedName("ratingAvg")
-//    val ratingAvg: Double,
-//
-//    @SerializedName("reviewCount")
-//    val reviewCount: String,
-//
-//    @SerializedName("imageUrl")
-//    val imageUrl: String
-//)
+): Serializable
