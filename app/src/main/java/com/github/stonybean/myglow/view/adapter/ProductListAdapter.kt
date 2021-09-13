@@ -1,7 +1,6 @@
 package com.github.stonybean.myglow.view.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,53 +13,71 @@ import com.github.stonybean.myglow.databinding.ItemNormalBinding
 import com.github.stonybean.myglow.model.Product
 import com.squareup.picasso.Picasso
 import com.github.stonybean.myglow.model.Recommend
+import javax.inject.Inject
 
 /**
  * Created by Joo on 2021/09/10
  */
-class ProductListAdapter(private val context: Context) :
+class ProductListAdapter @Inject constructor() :
     RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
 
     var productList: ArrayList<Product> = ArrayList()
-    var recommendList: ArrayList<Recommend> = ArrayList()
+    var recommendList: HashMap<Int, ArrayList<Recommend>> = HashMap()
 
     inner class ViewHolder(private val binding: ItemNormalBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
         fun onBind(data: Product) {
-            Picasso.get()
-                .load(data.imageUrl)
-                .placeholder(R.drawable.ic_no_image)
-                .resize(100, 100)
-                .into(binding.ivThumbnail)
+            binding.apply {
+                Picasso.get()
+                    .load(data.imageUrl)
+                    .placeholder(R.drawable.ic_no_image)
+                    .resize(100, 100)
+                    .into(ivThumbnail)
 
-            binding.tvSequence.text = (adapterPosition + 1).toString()
-            binding.tvCompanyName.text = data.brand.brandTitle
-            binding.tvProductTitle.text = data.productTitle
-            binding.tvReview.text = "${data.ratingAvg} 리뷰(${data.reviewCount})"
+                tvSequence.text = (adapterPosition + 1).toString()
+                tvCompanyName.text = data.brand.brandTitle
+                tvProductTitle.text = data.productTitle
+                tvReview.text = "${data.ratingAvg} ${root.context.getString(R.string.text_review, data.reviewCount)}"
 
-            binding.clProduct.setOnClickListener {
-                val bundle = bundleOf("product" to data)
-                binding.root.findNavController().navigate(R.id.navigation_detail, bundle)
-            }
-
-            if (adapterPosition == 9 || adapterPosition == 19 || adapterPosition == 29) {
-                when (adapterPosition) {
-                    9 -> binding.tvRecommendSeq.text = "추천 1"
-                    19 -> binding.tvRecommendSeq.text = "추천 2"
-                    29 -> binding.tvRecommendSeq.text = "추천 3"
+                clProduct.setOnClickListener {
+                    val bundle = bundleOf("product" to data)
+                    root.findNavController().navigate(R.id.navigation_detail, bundle)
                 }
 
-                binding.rlRecommend.visibility = View.VISIBLE
-                val recommendListAdapter = RecommendListAdapter(recommendList)
-                binding.rvRecommend.layoutManager =
-                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-                binding.rvRecommend.adapter = recommendListAdapter
-                binding.rvRecommend.setHasFixedSize(true)
-                recommendListAdapter.notifyDataSetChanged()
-            } else {
-                binding.rlRecommend.visibility = View.GONE
+                if (adapterPosition == 9 || adapterPosition == 19 || adapterPosition == 29) {
+                    var recommendListAdapter: RecommendListAdapter? = null
+
+                    when (adapterPosition) {
+                        9 -> {
+                            tvRecommendSeq.text = root.context.getString(R.string.title_recommend_1)
+                            recommendListAdapter = RecommendListAdapter(recommendList[0] as ArrayList<Recommend>)
+                        }
+                        19 -> {
+                            tvRecommendSeq.text = root.context.getString(R.string.title_recommend_2)
+                            recommendListAdapter = RecommendListAdapter(recommendList[1] as ArrayList<Recommend>)
+                        }
+                        29 -> {
+                            tvRecommendSeq.text = root.context.getString(R.string.title_recommend_3)
+                            recommendListAdapter = RecommendListAdapter(recommendList[2] as ArrayList<Recommend>)
+                        }
+                    }
+
+                    rlRecommend.visibility = View.VISIBLE
+
+
+                    rvRecommend.apply {
+                        layoutManager =
+                            LinearLayoutManager(root.context, LinearLayoutManager.HORIZONTAL, false)
+                        adapter = recommendListAdapter
+                        setHasFixedSize(true)
+                    }
+
+                    recommendListAdapter!!.notifyDataSetChanged()
+                } else {
+                    binding.rlRecommend.visibility = View.GONE
+                }
             }
         }
     }

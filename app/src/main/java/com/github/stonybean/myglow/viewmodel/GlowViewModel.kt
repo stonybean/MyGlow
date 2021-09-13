@@ -6,14 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.github.stonybean.myglow.model.Products
 import com.github.stonybean.myglow.model.Recommends
 import com.github.stonybean.myglow.repository.GlowRepository
-import kotlinx.coroutines.joinAll
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import javax.inject.Inject
 
 /**
  * Created by Joo on 2021/09/10
  */
-class GlowViewModel(private val repository: GlowRepository): ViewModel() {
+
+@HiltViewModel
+class GlowViewModel @Inject constructor(private val repository: GlowRepository) :
+    ViewModel() {
 
     private val _productsData = MutableLiveData<Products>()
     val productData = _productsData

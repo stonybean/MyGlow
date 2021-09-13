@@ -7,28 +7,31 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.stonybean.myglow.databinding.FragmentMainBinding
 import com.github.stonybean.myglow.model.Product
 import com.github.stonybean.myglow.model.Recommend
 import com.github.stonybean.myglow.model.Recommends
-import com.github.stonybean.myglow.repository.GlowRepository
 import com.github.stonybean.myglow.view.adapter.ProductListAdapter
 import com.github.stonybean.myglow.viewmodel.GlowViewModel
-import com.github.stonybean.myglow.viewmodel.GlowViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.fragment.app.viewModels
+import com.github.stonybean.myglow.R
+import javax.inject.Inject
 
+/**
+ * Created by Joo on 2021/09/10
+ */
+@AndroidEntryPoint
 class MainFragment : Fragment() {
 
-    private lateinit var viewModel: GlowViewModel
-    private lateinit var viewModelFactory: GlowViewModelFactory
-
     private var _binding: FragmentMainBinding? = null
+    val viewModel: GlowViewModel by viewModels()
 
-    // adapter 관련
-    private lateinit var productListAdapter: ProductListAdapter
-    private var productList: ArrayList<Product> = ArrayList()
+    @Inject
+    lateinit var productListAdapter: ProductListAdapter     // adapter
+    private var itemList: ArrayList<Product> = ArrayList()  // list for add adapter
     private var currentPage = 1
 
     // 추천 제품 목록 관리 HashMap
@@ -45,24 +48,13 @@ class MainFragment : Fragment() {
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
 
-        binding.tbMain.title = "리스트"
+        binding.tbMain.title = getString(R.string.title_main)
 
         // 리스트 어댑터 초기화
         initAdapter()
 
-        // 뷰모델
-        viewModelFactory = GlowViewModelFactory(GlowRepository())
-        viewModel = ViewModelProvider(this, viewModelFactory).get(GlowViewModel::class.java)
-
-        // 제품 목록 LiveData
-        viewModel.productData.observe(viewLifecycleOwner, Observer {
-            updateProductList(it.products)
-        })
-
-        // 추천 제품 목록 LiveData
-        viewModel.recommendData.observe(viewLifecycleOwner, Observer {
-            updateRecommendList(it)
-        })
+        // LiveData Observer
+        setObservers()
 
         return binding.root
     }
@@ -89,41 +81,63 @@ class MainFragment : Fragment() {
         _binding = null
     }
 
+    // Set Adapter
     private fun initAdapter() {
-        productListAdapter = ProductListAdapter(requireContext())
-        binding.rvProduct.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvProduct.adapter = productListAdapter
-        binding.rvProduct.setHasFixedSize(true)
-        binding.rvProduct.addOnScrollListener(ScrollListener())
+        productListAdapter = ProductListAdapter()
+
+        binding.rvProduct.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = productListAdapter
+            setHasFixedSize(true)
+            addOnScrollListener(ScrollListener())
+        }
+    }
+
+    // LiveData Observer
+    private fun setObservers() {
+        viewModel.apply {
+            // 제품 목록
+            productData.observe(viewLifecycleOwner, Observer {
+                updateProductList(it.products)
+            })
+
+            // 추천 제품 목록
+            recommendData.observe(viewLifecycleOwner, Observer {
+                updateRecommendList(it)
+            })
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateProductList(productList: List<Product>) {
+    private fun updateProductList(list: List<Product>) {
         binding.rlProgress.visibility = View.GONE
 
         if (currentPage == 1) {
-            this.productList.clear()
+            itemList.clear()
         }
 
-        if (this.productList.size < 60) {   // 3 페이지까지의 리스트 표시를 위해
-            this.productList.addAll(productList)
+        if (itemList.size < 60) {   // 3 페이지까지의 리스트만 표시하기 위해
+            itemList.addAll(list)
         }
 
-        productListAdapter.productList = this.productList
-        productListAdapter.notifyDataSetChanged()
+        // 제품 목록
+        productListAdapter.apply {
+            productList = itemList
+            notifyDataSetChanged()
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun updateRecommendList(recommends: Recommends) {
-        recommendHashMap[1] = recommends.recommend1 as ArrayList<Recommend>
-        recommendHashMap[2] = recommends.recommend2 as ArrayList<Recommend>
-        recommendHashMap[3] = recommends.recommend3 as ArrayList<Recommend>
+        recommendHashMap[0] = recommends.recommend1 as ArrayList<Recommend>
+        recommendHashMap[1] = recommends.recommend2 as ArrayList<Recommend>
+        recommendHashMap[2] = recommends.recommend3 as ArrayList<Recommend>
 
-        val recommendList = recommendHashMap[currentPage]
-
-        // 추천 목록 리스트
-        productListAdapter.recommendList = recommendList!!
-        productListAdapter.notifyDataSetChanged()
+        // 추천 제품 목록
+        productListAdapter.apply {
+            recommendList = recommendHashMap
+            notifyDataSetChanged()
+        }
     }
 
     // 리스트 마지막 스크롤 감지

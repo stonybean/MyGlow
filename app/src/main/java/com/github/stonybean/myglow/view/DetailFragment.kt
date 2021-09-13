@@ -12,6 +12,9 @@ import com.github.stonybean.myglow.model.Product
 import com.github.stonybean.myglow.model.Recommend
 import com.squareup.picasso.Picasso
 
+/**
+ * Created by Joo on 2021/09/10
+ */
 class DetailFragment : Fragment() {
 
     private var _binding: FragmentDetailBinding? = null
@@ -32,7 +35,7 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tbDetail.title = "상세 정보"
+        binding.tbDetail.title = getString(R.string.title_detail)
         binding.tbDetail.setNavigationIcon(R.drawable.baseline_arrow_back_24)
         binding.tbDetail.setNavigationOnClickListener { _ ->
             binding.root.findNavController().popBackStack()

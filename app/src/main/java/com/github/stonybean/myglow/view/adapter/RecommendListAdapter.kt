@@ -14,24 +14,26 @@ import com.squareup.picasso.Picasso
 /**
  * Created by Joo on 2021/09/10
  */
-class RecommendListAdapter(private val recommendList: ArrayList<Recommend>): RecyclerView.Adapter<RecommendListAdapter.ViewHolder>() {
+class RecommendListAdapter (private val recommendList: ArrayList<Recommend>): RecyclerView.Adapter<RecommendListAdapter.ViewHolder>() {
     inner class ViewHolder(private val binding: ItemRecommendBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         // 추천 아이템 표시
         @SuppressLint("SetTextI18n")
         fun onBind(data: Recommend) {
-            Picasso.get()
-                .load(data.imageUrl)
-                .placeholder(R.drawable.ic_no_image)
-                .into(binding.ivThumbnail)
+            binding.apply {
+                Picasso.get()
+                    .load(data.imageUrl)
+                    .placeholder(R.drawable.ic_no_image)
+                    .into(ivThumbnail)
 
-            binding.tvProductTitle.text = data.productTitle
-            binding.tvReview.text = "${data.ratingAvg} 리뷰(${data.reviewCount})"
+                tvProductTitle.text = data.productTitle
+                tvReview.text = "${data.ratingAvg} ${root.context.getString(R.string.text_review, data.reviewCount)}"
 
-            binding.clRecommend.setOnClickListener {
-                val bundle = bundleOf("recommend" to data)
-                binding.root.findNavController().navigate(R.id.navigation_detail, bundle)
+                clRecommend.setOnClickListener {
+                    val bundle = bundleOf("recommend" to data)
+                    root.findNavController().navigate(R.id.navigation_detail, bundle)
+                }
             }
         }
     }

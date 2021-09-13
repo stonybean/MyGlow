@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">MyGlow</string>
-    <string name="title_main">Main</string>
-    <string name="title_detail">Detail</string>
+    <string name="title_main">메인</string>
+    <string name="title_detail">상세 정보</string>
+    <string name="text_review">리뷰(%s)</string>
+    <string name="title_recommend_1">추천 1</string>
+    <string name="title_recommend_2">추천 2</string>
+    <string name="title_recommend_3">추천 3</string>
 </resources>
