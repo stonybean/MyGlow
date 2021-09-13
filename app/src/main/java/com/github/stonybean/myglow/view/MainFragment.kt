@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.stonybean.myglow.databinding.FragmentMainBinding
 import com.github.stonybean.myglow.model.Product
 import com.github.stonybean.myglow.model.Recommend
+import com.github.stonybean.myglow.model.Recommends
 import com.github.stonybean.myglow.repository.GlowRepository
 import com.github.stonybean.myglow.view.adapter.ProductListAdapter
 import com.github.stonybean.myglow.viewmodel.GlowViewModel
@@ -31,7 +32,7 @@ class MainFragment : Fragment() {
     private var currentPage = 1
 
     // 추천 제품 목록 관리 HashMap
-    private val recommendList: HashMap<Int, ArrayList<Recommend>> = HashMap()
+    private val recommendHashMap: HashMap<Int, ArrayList<Recommend>> = HashMap()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -43,11 +44,8 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding.tbMain.title = "리스트"
 
         // 리스트 어댑터 초기화
         initAdapter()
@@ -63,18 +61,27 @@ class MainFragment : Fragment() {
 
         // 추천 제품 목록 LiveData
         viewModel.recommendData.observe(viewLifecycleOwner, Observer {
-            recommendList[1] = it.recommend1 as ArrayList<Recommend>
-            recommendList[2] = it.recommend2 as ArrayList<Recommend>
-            recommendList[3] = it.recommend3 as ArrayList<Recommend>
+            updateRecommendList(it)
         })
 
-        // 제품 목록 요청
-        viewModel.getProducts(currentPage.toString())
-        // 추천 제품 목록 요청
-        viewModel.getRecommend()
+        return binding.root
+    }
 
-        // 프로그레스바 표시
-        binding.rlProgress.visibility = View.VISIBLE
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (currentPage < 3) {     // 3 페이지 이후 요청 안함
+            // 제품 목록 요청
+            viewModel.getProducts(currentPage)
+
+            if (recommendHashMap.isEmpty()) {
+                // 추천 제품 목록 요청
+                viewModel.getRecommend()
+            }
+
+            // 프로그레스바 표시
+            binding.rlProgress.visibility = View.VISIBLE
+        }
     }
 
     override fun onDestroyView() {
@@ -93,11 +100,29 @@ class MainFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun updateProductList(productList: List<Product>) {
         binding.rlProgress.visibility = View.GONE
-//        this.productList.addAll(productList)
+
+        if (currentPage == 1) {
+            this.productList.clear()
+        }
+
+        if (this.productList.size < 60) {   // 3 페이지까지의 리스트 표시를 위해
+            this.productList.addAll(productList)
+        }
+
+        productListAdapter.productList = this.productList
+        productListAdapter.notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun updateRecommendList(recommends: Recommends) {
+        recommendHashMap[1] = recommends.recommend1 as ArrayList<Recommend>
+        recommendHashMap[2] = recommends.recommend2 as ArrayList<Recommend>
+        recommendHashMap[3] = recommends.recommend3 as ArrayList<Recommend>
+
+        val recommendList = recommendHashMap[currentPage]
 
         // 추천 목록 리스트
-        productListAdapter.recommendList = recommendList[currentPage] as ArrayList<Recommend>
-        productListAdapter.productList = productList as ArrayList<Product>
+        productListAdapter.recommendList = recommendList!!
         productListAdapter.notifyDataSetChanged()
     }
 
@@ -121,7 +146,7 @@ class MainFragment : Fragment() {
                     }
 
                     currentPage += 1    // 다음 페이지 검색
-                    viewModel.getProducts(currentPage.toString())
+                    viewModel.getProducts(currentPage)
                     binding.rlProgress.visibility = View.VISIBLE
                 }
             }

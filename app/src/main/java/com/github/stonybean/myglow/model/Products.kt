@@ -1,9 +1,11 @@
 package com.github.stonybean.myglow.model
 
-
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
+/**
+ * Created by Joo on 2021/09/10
+ */
 data class Products(
     @SerializedName("products")
     val products: List<Product>

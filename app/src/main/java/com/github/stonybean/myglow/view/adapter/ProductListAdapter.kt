@@ -15,7 +15,6 @@ import com.github.stonybean.myglow.model.Product
 import com.squareup.picasso.Picasso
 import com.github.stonybean.myglow.model.Recommend
 
-
 /**
  * Created by Joo on 2021/09/10
  */

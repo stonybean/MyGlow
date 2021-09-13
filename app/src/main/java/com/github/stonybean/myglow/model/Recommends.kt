@@ -3,6 +3,9 @@ package com.github.stonybean.myglow.model
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
+/**
+ * Created by Joo on 2021/09/10
+ */
 data class Recommends(
     @SerializedName("recommend1")
     val recommend1: List<Recommend>,

@@ -13,7 +13,7 @@ interface GlowAPI {
     // 상품 리스트 요청
     @GET("product.{number}.json")
     suspend fun getProducts(
-        @Path("number") number: String
+        @Path("number") number: Int
     ): Response<Products>
 
     // 추천 상품 리스트 요청

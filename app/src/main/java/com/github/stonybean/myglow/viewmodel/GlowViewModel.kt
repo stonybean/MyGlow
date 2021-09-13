@@ -3,11 +3,10 @@ package com.github.stonybean.myglow.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.stonybean.myglow.model.Product
 import com.github.stonybean.myglow.model.Products
-import com.github.stonybean.myglow.model.Recommend
 import com.github.stonybean.myglow.model.Recommends
 import com.github.stonybean.myglow.repository.GlowRepository
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -22,12 +21,12 @@ class GlowViewModel(private val repository: GlowRepository): ViewModel() {
     private val _recommendData = MutableLiveData<Recommends>()
     val recommendData = _recommendData
 
-    fun getProducts(number: String) {
+    // 제품 목록
+    fun getProducts(number: Int) {
         viewModelScope.launch {
             repository.getProducts(number)?.let { response ->
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        println("Products : $it")
                         _productsData.postValue(it)
                     }
                 } else {
@@ -37,12 +36,12 @@ class GlowViewModel(private val repository: GlowRepository): ViewModel() {
         }
     }
 
+    // 제품 추천 목록
     fun getRecommend() {
         viewModelScope.launch {
             repository.getRecommends()?.let { response ->
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        println("Recommends : $it")
                         _recommendData.postValue(it)
                     }
                 } else {

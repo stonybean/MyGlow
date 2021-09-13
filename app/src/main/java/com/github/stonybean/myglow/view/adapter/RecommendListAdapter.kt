@@ -18,6 +18,7 @@ class RecommendListAdapter(private val recommendList: ArrayList<Recommend>): Rec
     inner class ViewHolder(private val binding: ItemRecommendBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        // 추천 아이템 표시
         @SuppressLint("SetTextI18n")
         fun onBind(data: Recommend) {
             Picasso.get()

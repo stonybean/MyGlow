@@ -9,7 +9,7 @@ import com.github.stonybean.myglow.network.GlowAPI
 class GlowRepository {
     private val glowApi = BaseService().getClient()?.create(GlowAPI::class.java)
 
-    suspend fun getProducts(number: String) = glowApi?.getProducts(number)
+    suspend fun getProducts(number: Int) = glowApi?.getProducts(number)
 
     suspend fun getRecommends() = glowApi?.getRecommends()
 }
