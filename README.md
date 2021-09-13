@@ -2,6 +2,14 @@
 
 <br>
 
+## 프로젝트 작업 환경
+- Android Studio Arctic Fox 2020.3.1 Patch 2
+- minSdk 21
+- targetSdk 30
+- gradle 7.0.2
+
+<br>
+
 ## Directory Tree
 
 - `model`
